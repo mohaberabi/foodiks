@@ -1,11 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlinx.serialziation)
+    alias(libs.plugins.room)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 android {
     namespace = "com.mohaberabi.foodiks"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.mohaberabi.foodiks"
@@ -51,6 +55,24 @@ android {
 
 dependencies {
 
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization)
+
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.serialization)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.serialization.json)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+
+    implementation(libs.coil.compose)
+    implementation(libs.koin.workmanager)
+    implementation(libs.workmanager)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -66,4 +88,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+room {
+    schemaDirectory("${rootDir}/schemas")
 }

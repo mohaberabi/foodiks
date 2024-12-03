@@ -4,14 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.mohaberabi.foodiks.ui.theme.FoodiksTheme
+import androidx.compose.runtime.compositionLocalOf
+import com.mohaberabi.foodiks.core.presentation.design_system.theme.FoodiksTheme
+import com.mohaberabi.foodiks.core.presentation.util.DefaultSnackBarController
+import com.mohaberabi.foodiks.foodiks.FoodiksApp
+import com.mohaberabi.foodiks.foodiks.rememberFoodiksAppState
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +17,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FoodiksTheme {
-
-                
+                val foodiksState = rememberFoodiksAppState()
+                FoodiksApp(
+                    foodiksState = foodiksState,
+                )
             }
         }
     }
