@@ -3,6 +3,7 @@ package com.mohaberabi.foodiks.core.data.syncer
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.mohaberabi.foodiks.core.data.syncer.FoodiksSyncHelper.SYNC_UID
 import com.mohaberabi.foodiks.core.domain.syncer.FoodiksSyncer
 import com.mohaberabi.foodiks.core.domain.util.DispatchersProvider
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ class WorkManagerFoodiksSyncer(
 
     override fun isSyncing(): Flow<Boolean> {
         return workManager.getWorkInfosForUniqueWorkFlow(
-            FoodiksSyncHelper.SYNC_UID,
+            SYNC_UID,
         ).map { infos ->
             infos.any { it.state == WorkInfo.State.RUNNING }
         }.conflate().flowOn(dispatchers.io)
