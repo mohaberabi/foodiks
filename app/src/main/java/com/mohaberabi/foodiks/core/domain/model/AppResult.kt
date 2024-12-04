@@ -40,6 +40,7 @@ inline fun <T, R> AppResult<T>.map(map: (T) -> R): AppResult<R> {
 inline fun <reified T> handleAppResult(
     block: () -> T
 ): AppResult<T> {
+    //
     return try {
         AppResult.Done(block())
     } catch (e: AppException) {
