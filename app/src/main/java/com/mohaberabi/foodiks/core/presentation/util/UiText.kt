@@ -1,4 +1,4 @@
-package com.mohaberabi.chatgpt.core.presentation.util
+package com.mohaberabi.foodiks.core.presentation.util
 
 import android.content.Context
 import androidx.annotation.StringRes

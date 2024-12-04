@@ -3,7 +3,7 @@ package com.mohaberabi.foodiks.features.layout.navigation
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.mohaberabi.foodiks.R
-import com.mohaberabi.foodiks.features.menu.screen.MenuRoute
+import com.mohaberabi.foodiks.features.menu.navigation.MenuRoute
 import com.mohaberabi.foodiks.features.orders.navigation.OrdersRoute
 import com.mohaberabi.foodiks.features.settings.navigation.SettingsRoute
 import com.mohaberabi.foodiks.features.tables.presentation.navigation.TablesRoute

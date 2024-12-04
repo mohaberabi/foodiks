@@ -15,5 +15,19 @@
     <string name="try_again">Try again</string>
     <string name="no_network">Your internet connection appears to be offline...</string>
     <string name="menuu">Menu</string>
+    <string name="orders_screen">Orders Screen</string>
+    <string name="retry_exced">Retry Attempt Exceeded</string>
 
+    <string name="disk_full">Disk Full</string>
+    <string name="io_fail">I/O Failure</string>
+    <string name="constraint_failed">Constraint Violation</string>
+    <string name="db_curropted">Database Corruption</string>
+    <string name="txn_failed">Transaction Failed</string>
+    <string name="unknown_error">Unknown Error</string>
+    <string name="request_timeout">Request Timed Out</string>
+    <string name="many_requests">Too Many Requests</string>
+    <string name="no_internet">No Internet Connection</string>
+    <string name="server_error">Server Error</string>
+    <string name="serailization_error">Serialization Error</string>
+    <string name="order_made">Order Made</string>
 </resources>
