@@ -57,7 +57,7 @@ dependencies {
 
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization)
-
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.serialization)
