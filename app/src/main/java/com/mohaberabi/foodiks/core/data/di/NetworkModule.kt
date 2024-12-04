@@ -1,5 +1,7 @@
 package com.mohaberabi.foodiks.core.data.di
 
+import com.mohaberabi.foodiks.core.data.network.client.KtorCategoriesRemoteDataSource
+import com.mohaberabi.foodiks.core.data.network.client.KtorProductsRemoteDataSource
 import com.mohaberabi.foodiks.core.data.network.client.StubCategoriesRemoteDataSource
 import com.mohaberabi.foodiks.core.data.network.client.StubProductsRemoteDataSource
 import com.mohaberabi.foodiks.core.data.network.factory.HttpClientFactory
@@ -13,6 +15,6 @@ import org.koin.dsl.module
 
 val networkModule = module {
     single<HttpClient> { HttpClientFactory.create() }
-    singleOf(::StubCategoriesRemoteDataSource) { bind<CategoryRemoteDataSource>() }
-    singleOf(::StubProductsRemoteDataSource) { bind<ProductsRemoteDataSource>() }
+    singleOf(::KtorCategoriesRemoteDataSource) { bind<CategoryRemoteDataSource>() }
+    singleOf(::KtorProductsRemoteDataSource) { bind<ProductsRemoteDataSource>() }
 }

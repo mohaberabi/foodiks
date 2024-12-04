@@ -1,8 +1,8 @@
 package com.mohaberabi.foodiks.core.domain.repository
 
 import com.mohaberabi.foodiks.core.domain.model.ProductModel
-import com.mohaberabi.foodiks.core.domain.syncer.Refreshable
-import com.mohaberabi.foodiks.core.domain.syncer.Syncable
+import com.mohaberabi.foodiks.core.common.Refreshable
+import com.mohaberabi.foodiks.core.common.Syncable
 import kotlinx.coroutines.flow.Flow
 
 interface ProductRepository : Syncable, Refreshable {

@@ -16,19 +16,17 @@ interface CartDao {
     @Query("SELECT qty FROM cart WHERE id = :id")
     suspend fun getCartItemQuantity(id: String): Int?
 
-    @Upsert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCartItem(cartItem: CartEntity)
-
-    @Query("UPDATE cart SET qty = qty + :quantity WHERE id = :id")
-    suspend fun updateCartItemQuantity(id: String, quantity: Int)
-
+    
     @Transaction
     suspend fun addToCart(cartItem: CartEntity) {
         val currentQuantity = getCartItemQuantity(cartItem.id)
         if (currentQuantity == null) {
             insertCartItem(cartItem.copy(qty = 1))
         } else {
-            updateCartItemQuantity(cartItem.id, cartItem.qty)
+            insertCartItem(cartItem.copy(qty = currentQuantity + 1))
+
         }
     }
 }

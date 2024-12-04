@@ -13,6 +13,14 @@ data class ProductModel(
 val ProductModel.toFtsModel
     get() = ProductFtsModel(
         productId = id,
-        productName = name,
-        productCategoryName = category.name
+        productName = name.trim().lowercase(),
+        productCategoryName = category.name.trim().lowercase()
+    )
+
+val ProductModel.toCartModel
+    get() = CartItemModel(
+        id = id,
+        name = name,
+        price = price,
+        qty = 0
     )
