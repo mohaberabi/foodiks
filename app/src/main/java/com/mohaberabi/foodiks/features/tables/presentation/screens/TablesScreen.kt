@@ -1,6 +1,5 @@
 package com.mohaberabi.foodiks.features.tables.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -96,6 +95,7 @@ fun TablesScreen(
     LaunchedEffect(
         key1 = selectedCategoryIndex
     ) {
+        rowScrollState.animateScrollToItem(selectedCategoryIndex)
         if (tablesState.products.isNotEmpty()) {
             val currentCategory = tablesState.categories[selectedCategoryIndex]
             val index = categoryToProductIndexMap[currentCategory.id]

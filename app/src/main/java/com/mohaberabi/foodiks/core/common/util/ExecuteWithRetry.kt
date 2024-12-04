@@ -6,6 +6,8 @@ import com.mohaberabi.foodiks.core.domain.model.error.AppException
 import com.mohaberabi.foodiks.core.domain.model.error.DataError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlin.coroutines.coroutineContext
 
 
 suspend fun <T> executeWithRetry(
@@ -17,8 +19,10 @@ suspend fun <T> executeWithRetry(
     var currentAttempt = 0
     var currentDelay = delayMillis
     var lastException: Throwable? = null
+    coroutineContext.ensureActive()
     while (currentAttempt < times) {
         Log.d("executeWithRetry", "Making the $currentAttempt Execution")
+        coroutineContext.ensureActive()
         try {
             return execute()
         } catch (e: Exception) {

@@ -1,4 +1,4 @@
-package com.mohaberabi.foodiks.core.data.source.local
+package com.mohaberabi.foodiks.core.data.database.source
 
 import com.mohaberabi.foodiks.core.data.database.dao.CartDao
 import com.mohaberabi.foodiks.core.data.database.mapper.toCartItemEntity
@@ -7,6 +7,7 @@ import com.mohaberabi.foodiks.core.domain.model.CartItemModel
 import com.mohaberabi.foodiks.core.domain.source.local.CartItemMap
 import com.mohaberabi.foodiks.core.domain.source.local.CartLocalDataSource
 import com.mohaberabi.foodiks.core.common.util.DispatchersProvider
+import com.mohaberabi.foodiks.core.data.database.ext.executeDatabaseOperation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -23,13 +24,17 @@ class RoomCartLocalDataSource(
 
     override suspend fun addToCart(item: CartItemModel) {
         withContext(dispatchers.io) {
-            cartDao.addToCart(item.toCartItemEntity)
+            executeDatabaseOperation {
+                cartDao.addToCart(item.toCartItemEntity)
+            }
         }
     }
 
     override suspend fun clearCart() {
         withContext(dispatchers.io) {
-            cartDao.clearCart()
+            executeDatabaseOperation {
+                cartDao.clearCart()
+            }
         }
     }
 }

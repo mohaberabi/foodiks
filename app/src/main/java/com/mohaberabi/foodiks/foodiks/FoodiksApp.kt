@@ -1,5 +1,6 @@
 package com.mohaberabi.foodiks.foodiks
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ fun FoodiksAppRoot(
     viewmodel: FoodiksViewModel = koinViewModel()
 ) {
     val connected by viewmodel.isConnected.collectAsStateWithLifecycle()
+  
     FoodiksApp(
         foodiksState = foodiksState,
         isConnected = connected

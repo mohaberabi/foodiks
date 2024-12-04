@@ -14,5 +14,6 @@
     <string name="empty_data">Empty Data</string>
     <string name="try_again">Try again</string>
     <string name="no_network">Your internet connection appears to be offline...</string>
+    <string name="menuu">Menu</string>
 
 </resources>

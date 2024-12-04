@@ -6,7 +6,5 @@ import com.mohaberabi.foodiks.core.domain.repository.ProductRepository
 class SyncProductsUseCase(
     private val productRepository: ProductRepository
 ) {
-    suspend operator fun invoke(): AppResult<Unit> {
-        return productRepository.sync()
-    }
+    suspend operator fun invoke(): AppResult<Unit> = productRepository.sync()
 }

@@ -7,7 +7,5 @@ import kotlinx.coroutines.flow.Flow
 class GetAllCategoriesUseCase(
     private val categoryRepository: CategoryRepository
 ) {
-    operator fun invoke(): Flow<List<CategoryModel>> {
-        return categoryRepository.getAllCategories()
-    }
+    operator fun invoke(): Flow<List<CategoryModel>> = categoryRepository.getAllCategories()
 }
