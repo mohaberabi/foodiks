@@ -13,9 +13,9 @@ interface ProductsDao {
     @Query("SELECT COUNT(*) = 0 FROM product")
     suspend fun isEmpty(): Boolean
 
-    @Query("SELECT * FROM product")
+    @Query("SELECT * FROM product ORDER BY categoryId ASC")
     fun getAllProducts(): Flow<List<ProductEntity>>
 
-    @Query("SELECT * FROM product WHERE id IN (:ids)")
+    @Query("SELECT * FROM product WHERE id IN (:ids) ")
     fun getAllProductsByIds(ids: Set<String>): Flow<List<ProductEntity>>
 }

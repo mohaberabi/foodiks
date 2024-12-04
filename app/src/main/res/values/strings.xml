@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Foodiks</string>
+    <string name="search">search</string>
+    <string name="search_for_product_or_category">Search for product or category</string>
+    <string name="forward">Forward</string>
+    <string name="sar">SAR %1$s</string>
+    <string name="back">Back</string>
+    <string name="menu">Menu</string>
+    <string name="orders">Orders</string>
+    <string name="settings">Settings</string>
+    <string name="tables">Tables</string>
+    <string name="quote">Good code is like good food .simple, well prepared, and enjoyed by everyone</string>
+    <string name="foodics">Foodics</string>
+    <string name="empty_data">Empty Data</string>
+    <string name="try_again">Try again</string>
+    <string name="no_network">Your internet connection appears to be offline...</string>
+
 </resources>

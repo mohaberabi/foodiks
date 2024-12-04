@@ -6,7 +6,7 @@ import com.mohaberabi.foodiks.core.data.database.mapper.toCartItemModel
 import com.mohaberabi.foodiks.core.domain.model.CartItemModel
 import com.mohaberabi.foodiks.core.domain.source.local.CartItemMap
 import com.mohaberabi.foodiks.core.domain.source.local.CartLocalDataSource
-import com.mohaberabi.foodiks.core.domain.util.DispatchersProvider
+import com.mohaberabi.foodiks.core.common.util.DispatchersProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

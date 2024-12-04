@@ -5,7 +5,7 @@ import com.mohaberabi.foodiks.core.data.database.mapper.toProductFtsEntity
 import com.mohaberabi.foodiks.core.domain.model.ProductFtsModel
 import com.mohaberabi.foodiks.core.domain.source.local.ProductFtsLocalDataSource
 import com.mohaberabi.foodiks.core.domain.source.local.ProductId
-import com.mohaberabi.foodiks.core.domain.util.DispatchersProvider
+import com.mohaberabi.foodiks.core.common.util.DispatchersProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext

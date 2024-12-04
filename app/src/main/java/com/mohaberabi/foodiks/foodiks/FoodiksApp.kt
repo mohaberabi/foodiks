@@ -1,27 +1,51 @@
 package com.mohaberabi.foodiks.foodiks
 
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mohaberabi.foodiks.core.presentation.compose.EventCollector
-import com.mohaberabi.foodiks.core.common.navigation.BottomNavRoutes
-import com.mohaberabi.foodiks.core.common.navigation.FoodiksNavHost
+import com.mohaberabi.foodiks.foodiks.navigation.FoodiksNavHost
+import com.mohaberabi.foodiks.core.presentation.compose.AppScaffold
+import com.mohaberabi.foodiks.core.presentation.compose.NoConnectionTopBar
+import com.mohaberabi.foodiks.core.presentation.design_system.theme.Spacing
 import com.mohaberabi.foodiks.core.presentation.util.DefaultSnackBarController
-import com.mohaberabi.foodiks.features.tables.presentation.navigation.tablesScreen
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 val LocalSnackBarController = compositionLocalOf { DefaultSnackBarController() }
 
 @Composable
-fun FoodiksApp(
-    startRoute: Any = BottomNavRoutes.Tables.route,
+fun FoodiksAppRoot(
     foodiksState: FoodiksAppState,
+    viewmodel: FoodiksViewModel = koinViewModel()
 ) {
-    val controller = foodiksState.foodkisNavController
+    val connected by viewmodel.isConnected.collectAsStateWithLifecycle()
+    FoodiksApp(
+        foodiksState = foodiksState,
+        isConnected = connected
+    )
+}
+
+@Composable
+fun FoodiksApp(
+    foodiksState: FoodiksAppState,
+    isConnected: Boolean
+) {
+    val rootNavController = foodiksState.foodkisNavController
+    val layoutNavController = foodiksState.layoutNavController
     val scope = foodiksState.foodiksCoroutineScope
     val hostState = foodiksState.foodiksHostState
     val onShowSnackBar: (String) -> Unit = { message ->
@@ -29,6 +53,7 @@ fun FoodiksApp(
             hostState.showSnackbar(message = message)
         }
     }
+
     CompositionLocalProvider(
         LocalSnackBarController provides DefaultSnackBarController(),
     ) {
@@ -39,10 +64,31 @@ fun FoodiksApp(
         ) { message ->
             onShowSnackBar(message)
         }
-        FoodiksNavHost(
-            controller = controller,
-        )
+
+        AppScaffold(
+            snackBarHostState = hostState,
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+            ) {
+                AnimatedVisibility(visible = !isConnected) {
+                    NoConnectionTopBar()
+                }
+
+                FoodiksNavHost(
+                    rootNavController = rootNavController,
+                    layoutNavController = layoutNavController
+                )
+            }
+
+
+        }
+
     }
 
 
 }
+
+

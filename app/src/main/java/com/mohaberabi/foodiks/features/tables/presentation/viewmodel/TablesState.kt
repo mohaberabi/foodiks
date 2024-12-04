@@ -9,14 +9,14 @@ enum class TablesStatus {
     Initial,
     Loading,
     Populated,
-    Error,
+    Error;
+
+    val isLoading: Boolean get() = this == TablesStatus.Loading
 }
 
 @Stable
 data class TablesState(
     val products: List<ProductModel> = listOf(),
     val categories: List<CategoryModel> = listOf(),
-    val selectedCategoryIndex: Int = 0,
-    val searchQuery: String = "",
     val status: TablesStatus = TablesStatus.Initial
 )

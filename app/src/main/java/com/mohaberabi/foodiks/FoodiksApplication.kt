@@ -6,9 +6,10 @@ import com.mohaberabi.foodiks.core.data.di.coreLocalDataSourceModule
 import com.mohaberabi.foodiks.core.data.di.coreModule
 import com.mohaberabi.foodiks.core.data.di.coreRepositoryModule
 import com.mohaberabi.foodiks.core.data.di.coreUseCaseModule
+import com.mohaberabi.foodiks.core.data.di.coreViewModelModule
 import com.mohaberabi.foodiks.core.data.di.databaseModule
 import com.mohaberabi.foodiks.core.data.di.networkModule
-import com.mohaberabi.foodiks.core.domain.syncer.FoodiksSyncer
+import com.mohaberabi.foodiks.core.domain.source.syncer.FoodiksSyncer
 import com.mohaberabi.foodiks.features.tables.data.di.tablesModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -33,7 +34,8 @@ class FoodiksApplication : Application(), Configuration.Provider, KoinComponent 
                 coreLocalDataSourceModule,
                 coreRepositoryModule,
                 coreUseCaseModule,
-                tablesModule
+                tablesModule,
+                coreViewModelModule
             )
         }
         foodiksSyncr.requestSync()

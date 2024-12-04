@@ -5,7 +5,7 @@ import com.mohaberabi.foodiks.core.data.database.mapper.toCategoryEntity
 import com.mohaberabi.foodiks.core.data.database.mapper.toCategoryModel
 import com.mohaberabi.foodiks.core.domain.model.CategoryModel
 import com.mohaberabi.foodiks.core.domain.source.local.CategoryLocalDataSource
-import com.mohaberabi.foodiks.core.domain.util.DispatchersProvider
+import com.mohaberabi.foodiks.core.common.util.DispatchersProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
