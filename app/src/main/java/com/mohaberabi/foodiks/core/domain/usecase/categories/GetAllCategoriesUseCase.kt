@@ -9,3 +9,5 @@ class GetAllCategoriesUseCase(
 ) {
     operator fun invoke(): Flow<List<CategoryModel>> = categoryRepository.getAllCategories()
 }
+
+
