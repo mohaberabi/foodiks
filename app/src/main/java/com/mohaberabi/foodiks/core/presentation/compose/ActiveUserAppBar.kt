@@ -33,7 +33,7 @@ fun ActiveUserAppBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(Spacing.sm),
+            .padding(vertical = Spacing.sm, horizontal = Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

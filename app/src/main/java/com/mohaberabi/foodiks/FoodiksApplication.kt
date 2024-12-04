@@ -10,6 +10,7 @@ import com.mohaberabi.foodiks.core.data.di.coreViewModelModule
 import com.mohaberabi.foodiks.core.data.di.databaseModule
 import com.mohaberabi.foodiks.core.data.di.networkModule
 import com.mohaberabi.foodiks.core.domain.source.syncer.FoodiksSyncer
+import com.mohaberabi.foodiks.core.domain.usecase.sync.RequestSyncUseCase
 import com.mohaberabi.foodiks.features.tables.data.di.tablesModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -21,7 +22,7 @@ import org.koin.core.context.startKoin
 
 class FoodiksApplication : Application(), Configuration.Provider, KoinComponent {
 
-    private val foodiksSyncr by inject<FoodiksSyncer>()
+    private val requestSync by inject<RequestSyncUseCase>()
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -38,7 +39,7 @@ class FoodiksApplication : Application(), Configuration.Provider, KoinComponent 
                 coreViewModelModule
             )
         }
-        foodiksSyncr.requestSync()
+        requestSync()
     }
 
     override val workManagerConfiguration: Configuration

@@ -45,10 +45,8 @@ fun TablesPopualtedBox(
         contentAlignment = Alignment.BottomCenter,
     ) {
         Column(
-            modifier
-                .fillMaxSize()
-                .padding(Spacing.md)
         ) {
+            MenuStatusTopBar()
             SearchTextField(
                 onTextChanged = onSearch,
                 value = searchQuery,

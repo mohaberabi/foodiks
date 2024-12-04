@@ -6,7 +6,5 @@ import com.mohaberabi.foodiks.core.domain.repository.CategoryRepository
 class SyncCategoriesUseCase(
     private val categoryRepository: CategoryRepository
 ) {
-    suspend operator fun invoke(): AppResult<Unit> {
-        return categoryRepository.sync()
-    }
+    suspend operator fun invoke(): AppResult<Unit> = categoryRepository.sync()
 }

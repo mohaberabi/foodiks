@@ -1,4 +1,4 @@
-package com.mohaberabi.foodiks.core.data.source.local
+package com.mohaberabi.foodiks.core.data.database.source
 
 import com.mohaberabi.foodiks.core.data.database.dao.ProductsDao
 import com.mohaberabi.foodiks.core.data.database.mapper.toProductEntity
@@ -6,6 +6,7 @@ import com.mohaberabi.foodiks.core.data.database.mapper.toProductModel
 import com.mohaberabi.foodiks.core.domain.model.ProductModel
 import com.mohaberabi.foodiks.core.domain.source.local.ProductsLocalDataSource
 import com.mohaberabi.foodiks.core.common.util.DispatchersProvider
+import com.mohaberabi.foodiks.core.data.database.ext.executeDatabaseOperation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -17,13 +18,18 @@ class RoomProductsLocalDataSource(
 ) : ProductsLocalDataSource {
     override suspend fun addProducts(products: List<ProductModel>) {
         withContext(dispatchers.io) {
-            productsDao.addProducts(products.map { it.toProductEntity })
+            executeDatabaseOperation {
+                productsDao.addProducts(products.map { it.toProductEntity })
+
+            }
         }
     }
 
     override suspend fun isEmpty(): Boolean {
         return withContext(dispatchers.io) {
-            productsDao.isEmpty()
+            executeDatabaseOperation {
+                productsDao.isEmpty()
+            }
         }
     }
 

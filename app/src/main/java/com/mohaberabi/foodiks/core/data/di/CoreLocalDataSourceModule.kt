@@ -1,11 +1,10 @@
 package com.mohaberabi.foodiks.core.data.di
 
 
-import android.system.Os.bind
-import com.mohaberabi.foodiks.core.data.source.local.RoomCartLocalDataSource
-import com.mohaberabi.foodiks.core.data.source.local.RoomCategoryLocalDataSource
-import com.mohaberabi.foodiks.core.data.source.local.RoomProductFtsLocalDataSource
-import com.mohaberabi.foodiks.core.data.source.local.RoomProductsLocalDataSource
+import com.mohaberabi.foodiks.core.data.database.source.RoomCartLocalDataSource
+import com.mohaberabi.foodiks.core.data.database.source.RoomCategoryLocalDataSource
+import com.mohaberabi.foodiks.core.data.database.source.RoomProductFtsLocalDataSource
+import com.mohaberabi.foodiks.core.data.database.source.RoomProductsLocalDataSource
 import com.mohaberabi.foodiks.core.domain.source.local.CartLocalDataSource
 import com.mohaberabi.foodiks.core.domain.source.local.CategoryLocalDataSource
 import com.mohaberabi.foodiks.core.domain.source.local.ProductFtsLocalDataSource

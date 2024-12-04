@@ -9,9 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import kotlinx.serialization.Serializable
 
-@Serializable
-data object MenuRoute
-
 
 @Composable
 fun MenuScreen(

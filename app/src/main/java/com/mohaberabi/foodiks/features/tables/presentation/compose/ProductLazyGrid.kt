@@ -1,6 +1,8 @@
 package com.mohaberabi.foodiks.features.tables.presentation.compose
 
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -12,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.mohaberabi.foodiks.core.domain.model.ProductModel
+import com.mohaberabi.foodiks.core.presentation.design_system.theme.Spacing
 
 @Composable
 fun ResponsiveProductGrid(
@@ -31,9 +34,10 @@ fun ResponsiveProductGrid(
     }
 
     LazyVerticalGrid(
+        contentPadding = PaddingValues(Spacing.sm),
         state = scrollState,
         columns = GridCells.Fixed(columns),
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
     ) {
         items(products) { product ->
             ProductCard(

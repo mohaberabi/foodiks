@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +33,7 @@ import com.mohaberabi.foodiks.core.domain.model.ProductModel
 import com.mohaberabi.foodiks.core.presentation.compose.NetworkImage
 import com.mohaberabi.foodiks.core.presentation.design_system.theme.FoodiksTheme
 import com.mohaberabi.foodiks.core.presentation.design_system.theme.Spacing
+import kotlin.math.min
 
 
 @Composable
@@ -47,17 +50,20 @@ fun ProductCard(
     ) {
 
         ElevatedCard(
+
             elevation = CardDefaults.elevatedCardElevation(
-                defaultElevation = 4.dp
+                defaultElevation = 4.dp,
+
             ),
             shape = RoundedCornerShape(Spacing.lg),
-            colors = CardDefaults.cardColors(
+            colors = CardDefaults.elevatedCardColors(
+
                 containerColor = MaterialTheme.colorScheme.background,
                 disabledContainerColor = MaterialTheme.colorScheme.background,
             ),
             modifier = modifier
                 .padding(Spacing.md)
-                .wrapContentHeight(),
+                .heightIn(min = 220.dp),
             onClick = onClick,
         ) {
 
@@ -81,13 +87,18 @@ fun ProductCard(
         if (cartQty > 0) {
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(50.dp))
-                    .background(MaterialTheme.colorScheme.error)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.error).sizeIn(minWidth = 34.dp, minHeight = 34.dp),
+                contentAlignment = Alignment.Center
             ) {
+
                 Text(
                     text = "${cartQty}",
                     modifier = Modifier.padding(Spacing.sm),
-                    style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
+                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimary),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -105,7 +116,7 @@ private fun PreviewProductCard() {
     FoodiksTheme {
 
         ProductCard(
-            cartQty = 22,
+            cartQty = 2,
             product = ProductModel("1", "Tilabia fish", 200.0, CategoryModel("", ""), "", "")
         )
     }

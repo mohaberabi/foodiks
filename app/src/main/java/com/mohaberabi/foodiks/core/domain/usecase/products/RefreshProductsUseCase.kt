@@ -6,7 +6,6 @@ import com.mohaberabi.foodiks.core.domain.repository.ProductRepository
 class RefreshProductsUseCase(
     private val productRepository: ProductRepository
 ) {
-    suspend operator fun invoke(forceRemote: Boolean): AppResult<Unit> {
-        return productRepository.refresh(forceRemote)
-    }
+    suspend operator fun invoke(forceRemote: Boolean): AppResult<Unit> =
+        productRepository.refresh(forceRemote)
 }

@@ -18,6 +18,9 @@ sealed interface DataError : AppError {
     enum class LocalError : DataError {
         DISK_FULL,
         IO_FAILURE,
-        UNKNOWN
+        UNKNOWN,
+        CONSTRAINT_FAILURE,
+        DB_CORRUPTION,
+        TRANSACTION_FAILED
     }
 }

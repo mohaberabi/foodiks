@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mohaberabi.foodiks.core.common.util.retryExponentBackOff
 import com.mohaberabi.foodiks.core.domain.model.AppResult
 import com.mohaberabi.foodiks.core.domain.model.CartItemModel
 import com.mohaberabi.foodiks.core.domain.model.CartModel
@@ -37,13 +38,13 @@ import kotlinx.coroutines.launch
 class TablesViewModel(
     getCart: GetCartUseCase,
     getCategories: GetAllCategoriesUseCase,
+    checkSyncing: CheckSyncingUseCase,
     private val savedStateHandle: SavedStateHandle,
     private val searchProducts: SearchProductsUseCase,
     private val addToCart: AddToCartUseCase,
     private val clearCart: ClearCartUseCase,
     private val refreshCategories: RefreshCategoriesUseCase,
     private val refreshProducts: RefreshProductsUseCase,
-    private val checkSyncing: CheckSyncingUseCase,
 ) : ViewModel() {
     companion object {
         private const val SEARCH_QUERY_KEY = "searchQueryKey"
@@ -67,20 +68,21 @@ class TablesViewModel(
             categories = categories,
             status = TablesStatus.Populated
         )
-    }.catch {
-        emit(TablesState(status = TablesStatus.Error))
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = TablesState(status = TablesStatus.Loading)
-    )
+    }.retryExponentBackOff()
+        .catch {
+            emit(TablesState(status = TablesStatus.Error))
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = TablesState(status = TablesStatus.Loading)
+        )
 
 
     val cartState = getCart().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
         initialValue = CartModel()
-    )
+    ).retryExponentBackOff()
 
     val syncingState = checkSyncing()
         .stateIn(
