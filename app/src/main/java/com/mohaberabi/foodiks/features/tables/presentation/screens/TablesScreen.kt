@@ -13,8 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mohaberabi.foodiks.R
 import com.mohaberabi.foodiks.core.domain.model.CartModel
 import com.mohaberabi.foodiks.core.domain.model.CategoryModel
 import com.mohaberabi.foodiks.core.domain.model.ProductModel
@@ -41,13 +43,13 @@ fun TablesScreenRoot(
     val searchQuery by viewmodel.searchQuery.collectAsStateWithLifecycle()
     val syncing by viewmodel.syncingState.collectAsStateWithLifecycle()
     val selectedCategoryIndex by viewmodel.selectedCategoryIndex.collectAsStateWithLifecycle()
-
+    val context = LocalContext.current
     EventCollector(
         flow = viewmodel.events,
     ) { event ->
         when (event) {
-            TablesEvents.OrderDone -> snackBarController.show("Order Made")
-            is TablesEvents.Error -> snackBarController.show(event.error)
+            TablesEvents.OrderDone -> snackBarController.show(context.getString(R.string.order_made))
+            is TablesEvents.Error -> snackBarController.show(event.error.fold(context))
 
         }
     }
@@ -81,7 +83,9 @@ fun TablesScreen(
     selectedCategoryIndex: Int,
 ) {
     var categoryToProductIndexMap by remember { mutableStateOf<Map<String, Int>>(mapOf()) }
-    LaunchedEffect(tablesState.products) {
+    LaunchedEffect(
+        tablesState.products,
+    ) {
         if (categoryToProductIndexMap.size != tablesState.products.size) {
             categoryToProductIndexMap = tablesState.products
                 .mapIndexed { index, product -> product.category.id to index }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mohaberabi.foodiks.core.common.util.extension.asUiText
 import com.mohaberabi.foodiks.core.common.util.retryExponentBackOff
 import com.mohaberabi.foodiks.core.domain.model.AppResult
 import com.mohaberabi.foodiks.core.domain.model.CartItemModel
@@ -21,6 +22,7 @@ import com.mohaberabi.foodiks.core.domain.usecase.products.RefreshProductsUseCas
 import com.mohaberabi.foodiks.core.domain.usecase.products.SearchProductsUseCase
 import com.mohaberabi.foodiks.core.domain.usecase.sync.CheckSyncingUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -59,8 +62,9 @@ class TablesViewModel(
     val events = _events.receiveAsFlow()
 
 
+    @OptIn(FlowPreview::class)
     val tablesState: StateFlow<TablesState> = combine(
-        searchQuery.flatMapLatest { query -> searchProducts(query) },
+        searchQuery.debounce(300).flatMapLatest { query -> searchProducts(query) },
         getCategories(),
     ) { products, categories ->
         TablesState(
@@ -78,11 +82,13 @@ class TablesViewModel(
         )
 
 
-    val cartState = getCart().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = CartModel()
-    ).retryExponentBackOff()
+    val cartState = getCart()
+        .retryExponentBackOff()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = CartModel()
+        )
 
     val syncingState = checkSyncing()
         .stateIn(
@@ -94,15 +100,15 @@ class TablesViewModel(
     fun addItemToCart(item: ProductModel) {
         viewModelScope.launch {
             addToCart(item.toCartModel)
-                .onDone { }
-                .onError { }
+                .onError { _events.send(TablesEvents.Error(it.error.asUiText())) }
         }
     }
 
     fun confirmOrder() {
         viewModelScope.launch {
-            clearCart().onDone { _events.send(TablesEvents.OrderDone) }
-                .onError { }
+            clearCart()
+                .onDone { _events.send(TablesEvents.OrderDone) }
+                .onError { _events.send(TablesEvents.Error(it.error.asUiText())) }
         }
     }
 
@@ -122,7 +128,7 @@ class TablesViewModel(
                 async { refreshProducts(forceRemote = true) }
             ).forEach { res ->
                 if (res is AppResult.Error) {
-                    _events.send(TablesEvents.Error(res.error.toString()))
+                    _events.send(TablesEvents.Error(res.error.error.asUiText()))
                     return@launch
                 }
             }

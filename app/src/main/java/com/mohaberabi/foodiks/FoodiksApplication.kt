@@ -2,6 +2,8 @@ package com.mohaberabi.foodiks
 
 import android.app.Application
 import androidx.work.Configuration
+import coil.Coil
+import coil.ImageLoader
 import com.mohaberabi.foodiks.core.data.di.coreLocalDataSourceModule
 import com.mohaberabi.foodiks.core.data.di.coreModule
 import com.mohaberabi.foodiks.core.data.di.coreRepositoryModule
@@ -23,6 +25,8 @@ import org.koin.core.context.startKoin
 class FoodiksApplication : Application(), Configuration.Provider, KoinComponent {
 
     private val requestSync by inject<RequestSyncUseCase>()
+
+    private val imageLoader by inject<ImageLoader>()
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -40,6 +44,12 @@ class FoodiksApplication : Application(), Configuration.Provider, KoinComponent 
             )
         }
         requestSync()
+        setupCoil()
+    }
+
+
+    private fun setupCoil() {
+        Coil.setImageLoader(imageLoader)
     }
 
     override val workManagerConfiguration: Configuration
