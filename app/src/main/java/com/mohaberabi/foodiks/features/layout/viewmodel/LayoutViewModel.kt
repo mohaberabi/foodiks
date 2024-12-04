@@ -1,4 +1,4 @@
-package com.mohaberabi.foodiks.foodiks
+package com.mohaberabi.foodiks.features.layout.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,7 +6,7 @@ import com.mohaberabi.foodiks.core.domain.usecase.connectivity.CheckConnectivity
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
-class FoodiksViewModel(
+class LayoutViewModel(
     checkConnectivity: CheckConnectivityUseCase
 ) : ViewModel() {
     val isConnected = checkConnectivity().stateIn(

@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,7 +55,7 @@ fun ProductCard(
             elevation = CardDefaults.elevatedCardElevation(
                 defaultElevation = 4.dp,
 
-            ),
+                ),
             shape = RoundedCornerShape(Spacing.lg),
             colors = CardDefaults.elevatedCardColors(
 
@@ -79,7 +80,14 @@ fun ProductCard(
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(Spacing.xlg)
+                    modifier = Modifier.padding(horizontal = Spacing.xlg, vertical = Spacing.sm)
+                )
+                Text(
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
+                    text = product.description,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(horizontal = Spacing.xlg).padding(bottom = Spacing.xs)
                 )
             }
         }
@@ -88,7 +96,8 @@ fun ProductCard(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.error).sizeIn(minWidth = 34.dp, minHeight = 34.dp),
+                    .background(MaterialTheme.colorScheme.error)
+                    .sizeIn(minWidth = 34.dp, minHeight = 34.dp),
                 contentAlignment = Alignment.Center
             ) {
 
@@ -117,7 +126,14 @@ private fun PreviewProductCard() {
 
         ProductCard(
             cartQty = 2,
-            product = ProductModel("1", "Tilabia fish", 200.0, CategoryModel("", ""), "", "")
+            product = ProductModel(
+                "1",
+                "Tilabia fish",
+                200.0,
+                CategoryModel("", ""),
+                "grilled fish with amazing sauce and also healthy espcailly for progrmmmers",
+                ""
+            )
         )
     }
 }
