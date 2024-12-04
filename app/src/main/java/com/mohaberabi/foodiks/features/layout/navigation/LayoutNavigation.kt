@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mohaberabi.foodiks.features.layout.screen.LayoutScreen
+import com.mohaberabi.foodiks.features.layout.screen.LayoutScreenRoot
 import com.mohaberabi.foodiks.features.tables.presentation.navigation.TablesRoute
 import com.mohaberabi.foodiks.foodiks.navigation.isCurrentRoute
 import com.mohaberabi.foodiks.foodiks.navigation.navigateBottom
@@ -29,11 +30,11 @@ fun NavGraphBuilder.layoutScreen(
     ) {
 
     }
-    LayoutScreen(
+    LayoutScreenRoot(
         onNavigateBottom = { bottom ->
             layoutNavController.navigateBottom(bottom.route)
         },
-        selected = { bottom ->
+        isBottomItemSelected = { bottom ->
             currentDestination?.isCurrentRoute(bottom.route::class) ?: false
         },
     ) {

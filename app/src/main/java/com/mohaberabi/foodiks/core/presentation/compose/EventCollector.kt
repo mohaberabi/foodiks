@@ -19,18 +19,12 @@ fun <T> EventCollector(
     onEvent: suspend (T) -> Unit,
 ) {
 
-    val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
         key1 = flow,
         key2 = key1,
         key3 = key2
     ) {
-
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            withContext(Dispatchers.Main.immediate) {
-                flow.collect(onEvent)
-            }
-        }
+        flow.collect(onEvent)
 
     }
 }

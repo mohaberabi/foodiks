@@ -28,7 +28,7 @@ fun ActiveUserAppBar(
     modifier: Modifier = Modifier,
     username: String = "Mohab Erabi",
     userId: String = "201098",
-    isOnline: Boolean = Random.nextBoolean()
+    isConnected : Boolean = Random.nextBoolean()
 ) {
     Row(
         modifier = modifier
@@ -51,8 +51,8 @@ fun ActiveUserAppBar(
         Spacer(modifier = Modifier.width(Spacing.sm))
 
         Badge(
-            modifier = Modifier.size(14.dp),
-            containerColor = if (isOnline) Color.Green else Color.Red
+            modifier = Modifier.size(18.dp),
+            containerColor = if (isConnected) Color.Green else Color.Red
         )
     }
 }
