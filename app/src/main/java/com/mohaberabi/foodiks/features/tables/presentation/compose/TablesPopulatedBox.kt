@@ -13,9 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.mohaberabi.foodiks.R
 import com.mohaberabi.foodiks.core.domain.model.CartModel
+import com.mohaberabi.foodiks.core.domain.model.CategoryModel
 import com.mohaberabi.foodiks.core.domain.model.ProductModel
+import com.mohaberabi.foodiks.core.presentation.compose.AppPlaceHolder
 import com.mohaberabi.foodiks.core.presentation.compose.CartButton
 import com.mohaberabi.foodiks.core.presentation.design_system.theme.Spacing
 import com.mohaberabi.foodiks.core.presentation.extensions.clearFocusOnTap
@@ -28,46 +32,53 @@ import com.mohaberabi.jetmart.core.presentation.compose.AppLoader
 fun TablesPopualtedBox(
     modifier: Modifier = Modifier,
     cartState: CartModel,
-    tablesState: TablesState,
-    selectedIndex: Int,
-    onSearch: (String) -> Unit,
-    onCategoryClicked: (Int) -> Unit = {},
+    products: List<ProductModel>,
+    categories: List<CategoryModel>,
     onProductClick: (ProductModel) -> Unit,
-    searchQuery: String,
     onConfirmOrder: () -> Unit = {},
+    gridScrollState: LazyGridState = rememberLazyGridState(),
     rowScrollState: LazyListState = rememberLazyListState(),
-    gridScrollState: LazyGridState = rememberLazyGridState()
+    selectedCategoryIndex: Int,
+    onCategoryClicked: (Int) -> Unit,
+    searchQuery: String,
 ) {
     Box(
         modifier = modifier
-            .fillMaxSize()
-            .clearFocusOnTap(),
+            .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
     ) {
-        Column(
-        ) {
-            MenuStatusTopBar()
-            SearchTextField(
-                onTextChanged = onSearch,
-                value = searchQuery,
-            )
+
+        Column {
             CategoryLazyRow(
-                categories = tablesState.categories,
+                categories = categories,
                 scrollState = rowScrollState,
-                selectedCategoryIndex = selectedIndex,
+                selectedCategoryIndex = selectedCategoryIndex,
                 onCategoryClick = onCategoryClicked
             )
+            if (products.isEmpty()) {
+                val title =
+                    stringResource(
+                        if (searchQuery.isNotEmpty() && products.isEmpty()) R.string.no_search_results_found
+                        else R.string.no_products
+                    )
+                AppPlaceHolder(
+                    title = title,
+                )
 
-            ResponsiveProductGrid(
-                modifier = Modifier
-                    .padding(bottom = 60.dp)
-                    .background(Color.LightGray.copy(alpha = 0.33f)),
-                scrollState = gridScrollState,
-                products = tablesState.products,
-                cartQty = { cartState[it.id]?.qty ?: 0 },
-                onProductClick = onProductClick
-            )
+            } else {
+                ResponsiveProductGrid(
+                    modifier = Modifier
+                        .padding(bottom = 60.dp)
+                        .background(Color.LightGray.copy(alpha = 0.33f)),
+                    scrollState = gridScrollState,
+                    products = products,
+                    cartQty = { cartState[it.id]?.qty ?: 0 },
+                    onProductClick = onProductClick
+                )
+            }
+
         }
+
         CartButton(
             onClick = onConfirmOrder,
             height = 60.dp,

@@ -11,6 +11,8 @@ enum class TablesStatus {
     Populated,
     Error;
 
+    val isError: Boolean get() = this == Error
+
     val isLoading: Boolean get() = this == Loading
 }
 

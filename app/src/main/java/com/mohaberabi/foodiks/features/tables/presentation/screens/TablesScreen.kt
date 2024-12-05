@@ -2,11 +2,13 @@ package com.mohaberabi.foodiks.features.tables.presentation.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mohaberabi.foodiks.R
@@ -24,6 +27,9 @@ import com.mohaberabi.foodiks.core.presentation.compose.AppPlaceHolder
 import com.mohaberabi.foodiks.core.presentation.compose.EventCollector
 import com.mohaberabi.foodiks.core.presentation.design_system.theme.FoodiksTheme
 import com.mohaberabi.foodiks.core.presentation.extensions.clearFocusOnTap
+import com.mohaberabi.foodiks.features.tables.presentation.compose.CategoryLazyRow
+import com.mohaberabi.foodiks.features.tables.presentation.compose.MenuStatusTopBar
+import com.mohaberabi.foodiks.features.tables.presentation.compose.SearchTextField
 import com.mohaberabi.foodiks.features.tables.presentation.compose.TablesPopualtedBox
 import com.mohaberabi.foodiks.features.tables.presentation.viewmodel.TablesEvents
 import com.mohaberabi.foodiks.features.tables.presentation.viewmodel.TablesState
@@ -37,13 +43,26 @@ import org.koin.androidx.compose.koinViewModel
 fun TablesScreenRoot(
     viewmodel: TablesViewModel = koinViewModel()
 ) {
+    val context = LocalContext.current
     val snackBarController = LocalSnackBarController.current
     val tablesState by viewmodel.tablesState.collectAsStateWithLifecycle()
     val cartState by viewmodel.cartState.collectAsStateWithLifecycle()
     val searchQuery by viewmodel.searchQuery.collectAsStateWithLifecycle()
     val syncing by viewmodel.syncingState.collectAsStateWithLifecycle()
     val selectedCategoryIndex by viewmodel.selectedCategoryIndex.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    // products must carry a mapping of their   corresponding category ids
+    // so that we can apply the animated scrolling combined with the products and category
+    // so it is cached inside of a remember block as a preprocessing step
+    // eit can be even optimized further by storing the category index inside of the product data structure so
+    // we can achieve it at constant time without even preprocessing
+    val categoryToProductIndexMap by remember(tablesState.products) {
+        derivedStateOf {
+            tablesState.products
+                .mapIndexed { index, product -> product.category.id to index }
+                .groupBy({ it.first }, { it.second })
+                .mapValues { it.value.first() }
+        }
+    }
     EventCollector(
         flow = viewmodel.events,
     ) { event ->
@@ -63,7 +82,8 @@ fun TablesScreenRoot(
         onConfirmOrder = viewmodel::confirmOrder,
         isSyncing = syncing,
         selectedCategoryIndex = selectedCategoryIndex,
-        onRefresh = viewmodel::refreshData
+        onRefresh = viewmodel::refreshData,
+        categoryToProductIndexMap = categoryToProductIndexMap,
     )
 }
 
@@ -73,27 +93,16 @@ fun TablesScreen(
     modifier: Modifier = Modifier,
     cartState: CartModel,
     tablesState: TablesState,
-    onSearch: (String) -> Unit,
+    onSearch: (String) -> Unit = {},
     onCategoryClicked: (Int) -> Unit = {},
-    onProductClick: (ProductModel) -> Unit,
+    onProductClick: (ProductModel) -> Unit = {},
     onConfirmOrder: () -> Unit = {},
     onRefresh: () -> Unit = {},
     searchQuery: String,
     isSyncing: Boolean,
     selectedCategoryIndex: Int,
+    categoryToProductIndexMap: Map<String, Int> = mapOf()
 ) {
-    var categoryToProductIndexMap by remember { mutableStateOf<Map<String, Int>>(mapOf()) }
-    LaunchedEffect(
-        tablesState.products,
-    ) {
-        if (categoryToProductIndexMap.size != tablesState.products.size) {
-            categoryToProductIndexMap = tablesState.products
-                .mapIndexed { index, product -> product.category.id to index }
-                .groupBy({ it.first }, { it.second })
-                .mapValues { it.value.first() }
-        }
-    }
-
     val rowScrollState = rememberLazyListState()
     val gridScrollState = rememberLazyGridState()
     LaunchedEffect(
@@ -109,64 +118,44 @@ fun TablesScreen(
         }
 
     }
-    Box(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .fillMaxSize()
             .clearFocusOnTap(),
-        contentAlignment = Alignment.BottomCenter,
     ) {
-
-
-        if (isSyncing || tablesState.status.isLoading) {
-            AppLoader()
-        } else {
-            TablesPopualtedBox(
-                modifier = modifier,
-                onCategoryClicked = onCategoryClicked,
-                onConfirmOrder = onConfirmOrder,
-                rowScrollState = rowScrollState,
-                gridScrollState = gridScrollState,
-                cartState = cartState,
-                tablesState = tablesState,
-                onSearch = onSearch,
-                onProductClick = onProductClick,
-                searchQuery = searchQuery,
-                selectedIndex = selectedCategoryIndex
-            )
-        }
-        PlaceHolder(
-            query = searchQuery,
-            products = tablesState.products,
-            categories = tablesState.categories,
-            onRefresh = onRefresh,
-            loading = isSyncing || tablesState.status.isLoading
+        MenuStatusTopBar()
+        SearchTextField(
+            onTextChanged = onSearch,
+            value = searchQuery,
         )
-
-    }
-
-}
-
-@Composable
-private fun BoxScope.PlaceHolder(
-    query: String,
-    products: List<*>,
-    categories: List<*>,
-    onRefresh: () -> Unit,
-    loading: Boolean
-) {
-    if (!loading) {
         when {
-            products.isEmpty() && categories.isEmpty() -> AppPlaceHolder(
-                onRetry = onRefresh,
+            tablesState.status.isError -> AppPlaceHolder(
+                title = stringResource(R.string.something_went_wrong),
+                onRetry = onRefresh
             )
 
-            query.isNotEmpty() && products.isEmpty() -> AppPlaceHolder()
+            isSyncing || tablesState.status.isLoading -> AppLoader()
+            else -> {
+                TablesPopualtedBox(
+                    modifier = modifier,
+                    onConfirmOrder = onConfirmOrder,
+                    gridScrollState = gridScrollState,
+                    cartState = cartState,
+                    products = tablesState.products,
+                    categories = tablesState.categories,
+                    selectedCategoryIndex = selectedCategoryIndex,
+                    searchQuery = searchQuery,
+                    onCategoryClicked = onCategoryClicked,
+                    onProductClick = onProductClick,
+                    rowScrollState = rowScrollState
+                )
+            }
 
-            else -> Unit
         }
     }
 
 }
+
 
 @Preview(
     showBackground = true,
