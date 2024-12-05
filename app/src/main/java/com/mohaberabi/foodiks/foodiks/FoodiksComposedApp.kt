@@ -1,7 +1,6 @@
 package com.mohaberabi.foodiks.foodiks
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -13,16 +12,12 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mohaberabi.foodiks.core.common.util.extension.dismissAndShowSnackbar
 import com.mohaberabi.foodiks.core.presentation.compose.EventCollector
 import com.mohaberabi.foodiks.foodiks.navigation.FoodiksNavHost
 import com.mohaberabi.foodiks.core.presentation.compose.AppScaffold
 import com.mohaberabi.foodiks.core.presentation.util.DefaultSnackBarController
-import com.mohaberabi.foodiks.features.layout.viewmodel.LayoutViewModel
-import org.koin.androidx.compose.koinViewModel
 
 val LocalSnackBarController = compositionLocalOf { DefaultSnackBarController() }
 

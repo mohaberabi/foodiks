@@ -64,7 +64,7 @@ class TablesViewModel(
 
     @OptIn(FlowPreview::class)
     val tablesState: StateFlow<TablesState> = combine(
-        searchQuery.debounce(300).flatMapLatest { query -> searchProducts(query) },
+        searchQuery.debounce(200).flatMapLatest { query -> searchProducts(query) },
         getCategories(),
     ) { products, categories ->
         TablesState(
@@ -72,14 +72,17 @@ class TablesViewModel(
             categories = categories,
             status = TablesStatus.Populated
         )
-    }.retryExponentBackOff()
-        .catch {
-            emit(TablesState(status = TablesStatus.Error))
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = TablesState(status = TablesStatus.Loading)
-        )
+    }.retryExponentBackOff(
+        whileAttmpting = {
+            emit(TablesState(status = TablesStatus.Loading))
+        },
+    ).catch {
+        emit(TablesState(status = TablesStatus.Error))
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = TablesState(status = TablesStatus.Loading)
+    )
 
 
     val cartState = getCart()
