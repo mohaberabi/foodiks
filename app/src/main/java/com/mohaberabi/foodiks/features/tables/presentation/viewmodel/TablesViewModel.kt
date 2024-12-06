@@ -26,8 +26,10 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -35,6 +37,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -54,6 +58,9 @@ class TablesViewModel(
         private const val SELECTED_CATEGORY_INDEX = "selectedCategoryIndex"
     }
 
+    private val flowRestarter = MutableStateFlow<Any>(Unit)
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
     val searchQuery = savedStateHandle.getStateFlow(SEARCH_QUERY_KEY, "")
     val selectedCategoryIndex = savedStateHandle.getStateFlow(SELECTED_CATEGORY_INDEX, 0)
 
@@ -63,21 +70,23 @@ class TablesViewModel(
 
 
     @OptIn(FlowPreview::class)
-    val tablesState: StateFlow<TablesState> = combine(
-        searchQuery.debounce(200).flatMapLatest { query -> searchProducts(query) },
-        getCategories(),
-    ) { products, categories ->
-        TablesState(
-            products = products,
-            categories = categories,
-            status = TablesStatus.Populated
-        )
-    }.retryExponentBackOff(
-        whileAttmpting = {
-            emit(TablesState(status = TablesStatus.Loading))
-        },
-    ).catch {
-        emit(TablesState(status = TablesStatus.Error))
+    val tablesState: StateFlow<TablesState> = flowRestarter.flatMapLatest {
+        combine(
+            searchQuery.debounce(200).flatMapLatest { query -> searchProducts(query) },
+            getCategories(),
+        ) { products, categories ->
+            TablesState(
+                products = products,
+                categories = categories,
+                status = TablesStatus.Populated
+            )
+        }.retryExponentBackOff(
+            whileAttmpting = {
+                emit(TablesState(status = TablesStatus.Loading))
+            },
+        ).catch {
+            emit(TablesState(status = TablesStatus.Error))
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -124,17 +133,19 @@ class TablesViewModel(
         savedStateHandle[SELECTED_CATEGORY_INDEX] = index
     }
 
+
+    fun retryGettingData() {
+        flowRestarter.update { Any() }
+    }
+
     fun refreshData() {
         viewModelScope.launch {
-            awaitAll(
-                async { refreshCategories(forceRemote = true) },
-                async { refreshProducts(forceRemote = true) }
-            ).forEach { res ->
-                if (res is AppResult.Error) {
-                    _events.send(TablesEvents.Error(res.error.error.asUiText()))
-                    return@launch
-                }
-            }
+            _isRefreshing.update { true }
+            joinAll(
+                launch { refreshCategories(forceRemote = true) },
+                launch { refreshProducts(forceRemote = true) }
+            )
+            _isRefreshing.update { false }
         }
     }
 

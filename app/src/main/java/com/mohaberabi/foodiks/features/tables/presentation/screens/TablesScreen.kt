@@ -49,6 +49,7 @@ fun TablesScreenRoot(
     val cartState by viewmodel.cartState.collectAsStateWithLifecycle()
     val searchQuery by viewmodel.searchQuery.collectAsStateWithLifecycle()
     val syncing by viewmodel.syncingState.collectAsStateWithLifecycle()
+    val isRefreshing by viewmodel.isRefreshing.collectAsStateWithLifecycle()
     val selectedCategoryIndex by viewmodel.selectedCategoryIndex.collectAsStateWithLifecycle()
     // products must carry a mapping of their   corresponding category ids
     // so that we can apply the animated scrolling combined with the products and category
@@ -73,6 +74,7 @@ fun TablesScreenRoot(
         }
     }
     TablesScreen(
+        isRefreshing = isRefreshing,
         cartState = cartState,
         tablesState = tablesState,
         onSearch = viewmodel::searchQueryChanged,
@@ -84,6 +86,7 @@ fun TablesScreenRoot(
         selectedCategoryIndex = selectedCategoryIndex,
         onRefresh = viewmodel::refreshData,
         categoryToProductIndexMap = categoryToProductIndexMap,
+        onRetry = viewmodel::retryGettingData,
     )
 }
 
@@ -98,8 +101,10 @@ fun TablesScreen(
     onProductClick: (ProductModel) -> Unit = {},
     onConfirmOrder: () -> Unit = {},
     onRefresh: () -> Unit = {},
+    onRetry :()->Unit = {},
     searchQuery: String,
     isSyncing: Boolean,
+    isRefreshing:Boolean = false,
     selectedCategoryIndex: Int,
     categoryToProductIndexMap: Map<String, Int> = mapOf()
 ) {
@@ -131,10 +136,10 @@ fun TablesScreen(
         when {
             tablesState.status.isError -> AppPlaceHolder(
                 title = stringResource(R.string.something_went_wrong),
-                onRetry = onRefresh
+                onRetry = onRetry
             )
 
-            isSyncing || tablesState.status.isLoading -> AppLoader()
+           tablesState.status.isLoading -> AppLoader()
             else -> {
                 TablesPopualtedBox(
                     modifier = modifier,
@@ -147,7 +152,9 @@ fun TablesScreen(
                     searchQuery = searchQuery,
                     onCategoryClicked = onCategoryClicked,
                     onProductClick = onProductClick,
-                    rowScrollState = rowScrollState
+                    rowScrollState = rowScrollState,
+                    onRefreshData = onRefresh,
+                    isRefreshingData = isRefreshing||isSyncing
                 )
             }
 
