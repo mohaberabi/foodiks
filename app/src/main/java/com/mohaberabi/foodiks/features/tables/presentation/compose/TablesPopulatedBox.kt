@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +30,7 @@ import com.mohaberabi.foodiks.features.tables.presentation.viewmodel.TablesStatu
 import com.mohaberabi.jetmart.core.presentation.compose.AppLoader
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TablesPopualtedBox(
     modifier: Modifier = Modifier,
@@ -41,43 +44,62 @@ fun TablesPopualtedBox(
     selectedCategoryIndex: Int,
     onCategoryClicked: (Int) -> Unit,
     searchQuery: String,
+    isRefreshingData: Boolean = false,
+    onRefreshData: () -> Unit = {},
 ) {
+
+
     Box(
         modifier = modifier
             .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
     ) {
 
-        Column {
-            CategoryLazyRow(
-                categories = categories,
-                scrollState = rowScrollState,
-                selectedCategoryIndex = selectedCategoryIndex,
-                onCategoryClick = onCategoryClicked
-            )
-            if (products.isEmpty()) {
-                val title =
-                    stringResource(
-                        if (searchQuery.isNotEmpty() && products.isEmpty()) R.string.no_search_results_found
-                        else R.string.no_products
+        PullToRefreshBox(
+            isRefreshing = isRefreshingData,
+            onRefresh = onRefreshData,
+        ) {
+            Column {
+                CategoryLazyRow(
+                    categories = categories,
+                    scrollState = rowScrollState,
+                    selectedCategoryIndex = selectedCategoryIndex,
+                    onCategoryClick = onCategoryClicked
+                )
+
+                when {
+                    products.isEmpty() && searchQuery.isNotEmpty() -> AppPlaceHolder(
+                        title = stringResource(
+                            R.string.no_search_results_found
+                        )
                     )
-                AppPlaceHolder(
-                    title = title,
-                )
 
-            } else {
-                ResponsiveProductGrid(
-                    modifier = Modifier
-                        .padding(bottom = 60.dp)
-                        .background(Color.LightGray.copy(alpha = 0.33f)),
-                    scrollState = gridScrollState,
-                    products = products,
-                    cartQty = { cartState[it.id]?.qty ?: 0 },
-                    onProductClick = onProductClick
-                )
+                    products.isEmpty() -> AppPlaceHolder(
+                        title = stringResource(
+                            R.string.no_products
+                        ),
+                        onRetry = onRefreshData
+                    )
+
+                    else -> {
+                        ResponsiveProductGrid(
+                            modifier = Modifier
+                                .padding(bottom = 60.dp)
+                                .background(Color.LightGray.copy(alpha = 0.33f)),
+                            scrollState = gridScrollState,
+                            products = products,
+                            cartQty = { cartState[it.id]?.qty ?: 0 },
+                            onProductClick = onProductClick
+                        )
+
+                    }
+
+                }
+
+          
             }
-
         }
+
 
         CartButton(
             onClick = onConfirmOrder,

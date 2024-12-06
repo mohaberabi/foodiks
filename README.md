@@ -4,6 +4,14 @@
 
 ---
 
+## **Looking for the Compose Multiplatform Version?**
+
+If you're interested in the **Compose Multiplatform** version of this app
+
+👉 [Foodiks Compose Multiplatform Repository](https://github.com/mohaberabi/foodiks-cmp)
+
+---
+
 ## **Features**
 
 - **Food Ordering**: Browse food items, select categories, and add items to the cart.
